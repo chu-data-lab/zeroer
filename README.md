@@ -1,21 +1,25 @@
 # ZeroER
 Implementation for the paper [ZeroER: Entity Resolution using Zero Labeled Examples.](https://arxiv.org/abs/1908.06049)
 
-## setup enviroment
+## Setup enviroment
     conda env create -f environment.yml
     conda activate ZeroER
 
-## how to use
-example usage:
+## How to use
+1. Write a blocking function for your dataset and put it in `blocking_functions.py`. 
+   You can have a look at the blocking functions we wrote in that file to get some ideas of how to write your own blocking function.
+   We use Magellan to do blocking so you can also refer to its [documentations](https://sites.google.com/site/anhaidgroup/projects/magellan/py_entitymatching).
 
-`python zeroer.py fodors_zagats --run_transitivity`
+2. To run the code, for example you are using the fodors_zagats dataset:
 
-If you want to incorporate the transitivity constraint, use arg `--run_transitivity`: 
+    `python zeroer.py fodors_zagats`
 
-`python zeroer.py fodors_zagats --run_transitivity`
+    If you want to incorporate the transitivity constraint, use arg `--run_transitivity`: 
 
-*Note this will generate features for self-join of the two tables (LxL and RxR) when arg `--LR_dup_free` is not present, which can take some time.
+    `python zeroer.py fodors_zagats --run_transitivity`
 
-If you know that your left table and right table are duplicate free, you can incorporate this information by using arg `--run_transitivity --LR_dup_free`:
+    *Note this will generate features for self-join of the two tables (LxL and RxR) when arg `--LR_dup_free` is not present, which can take some time.
 
-`python zeroer.py fodors_zagats --run_transitivity --LR_dup_free`
+    If you know that your left table and right table are duplicate free, you can incorporate this information by using arg `--run_transitivity --LR_dup_free`:
+
+    `python zeroer.py fodors_zagats --run_transitivity --LR_dup_free`
