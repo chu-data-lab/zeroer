@@ -6,8 +6,8 @@ from os.path import join
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("dataset",type=str)
-parser.add_argument("--run_transitivity",type=bool,help="whether to enforce transitivity constraint")
-parser.add_argument("--LR_dup_free",type=bool,help="are the left table and right table duplicate-free?")
+parser.add_argument("--run_transitivity",type=bool,default=False,nargs="?",const=True, help="whether to enforce transitivity constraint")
+parser.add_argument("--LR_dup_free",type=bool,default=False,nargs="?",const=True, help="are the left table and right table duplicate-free?")
 data_path = "datasets"
 
 if __name__ == '__main__':
