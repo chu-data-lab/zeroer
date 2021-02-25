@@ -5,11 +5,8 @@ channels:
 dependencies:
   - pip=21.0.1
   - python=3.6.12
-  - readline=8.1
   - setuptools=52.0.0
   - tk=8.6.10
-  - xz=5.2.5
-  - zlib=1.2.11
   - pip:
     - backcall==0.2.0
     - chardet==4.0.0
