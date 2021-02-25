@@ -8,8 +8,14 @@ Implementation for the paper [ZeroER: Entity Resolution using Zero Labeled Examp
 ## how to use
 example usage:
 
-`python zeroer.py fodors_zagats --run_transitivity=True --LR_dup_free=False`
+`python zeroer.py fodors_zagats --run_transitivity`
 
-*If you want to utilize the transitivity constraint, set `run_transitivity=True`. Note this will generate features for self-join of the two tables (LxL and RxR) when `LR_dup_free=False`, which can take some time.
+If you want to incorporate the transitivity constraint, use arg `--run_transitivity`: 
 
-*If you know that your left table and right table are duplicate free, you can use this information by setting `run_transitivity=True` and `LR_dup_free=True`.
+`python zeroer.py fodors_zagats --run_transitivity`
+
+*Note this will generate features for self-join of the two tables (LxL and RxR) when arg `--LR_dup_free` is not present, which can take some time.
+
+If you know that your left table and right table are duplicate free, you can incorporate this information by using arg `--run_transitivity --LR_dup_free`:
+
+`python zeroer.py fodors_zagats --run_transitivity --LR_dup_free`
