@@ -5,6 +5,8 @@ Implementation for the paper [ZeroER: Entity Resolution using Zero Labeled Examp
     conda env create -f environment.yml
 ## how to use
 example usage:
+
+ `conda activate ZeroER`
    
 `python zeroer.py fodors_zagats --run_transitivity=True --LR_dup_free=False`
 
