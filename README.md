@@ -6,6 +6,7 @@ Implementation for the paper [ZeroER: Entity Resolution using Zero Labeled Examp
     conda activate ZeroER
 
 ## How to use
+1. Put you dataset into the folder `datasets`. You should have a file `metadata.txt` in your data folder that specifies the file names of the left table and right table. You can refer to `datasets/fodors_zagats/metadata.txt` for this.
 1. Write a blocking function for your dataset and put it in `blocking_functions.py`. 
    You can have a look at the blocking functions we wrote in that file to get some ideas of how to write your own blocking function.
    We use Magellan to do blocking so you can also refer to its [documentations](https://sites.google.com/site/anhaidgroup/projects/magellan/py_entitymatching).
