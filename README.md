@@ -1,5 +1,5 @@
 # ZeroER
-Implementation for the paper
+Implementation for the paper [ZeroER: Entity Resolution using Zero Labeled Examples.](https://arxiv.org/abs/1908.06049)
 
 ## setup enviroment
     conda env create -f environment.yml
