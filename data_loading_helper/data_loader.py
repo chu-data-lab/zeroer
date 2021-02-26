@@ -5,7 +5,10 @@ import py_entitymatching as em
 def load_data(left_file_name, right_file_name, label_file_name, blocking_fn, include_self_join=False, increase_o=0):
     A = em.read_csv_metadata(left_file_name , key="id", encoding='iso-8859-1')
     B = em.read_csv_metadata(right_file_name , key="id", encoding='iso-8859-1')
-    G = pd.read_csv(label_file_name)
+    try:
+        G = pd.read_csv(label_file_name)
+    except:
+        G=None
     C = blocking_fn(A, B,increase_o)
     if include_self_join:
         C_A = blocking_fn(A, A,increase_o)

@@ -39,9 +39,9 @@ if __name__ == '__main__':
         print("Generating features and storing in: " + dataset_path + "/candset_features_df.csv")
 
         f = open(join(dataset_path, 'metadata.txt'), "r")
-        LEFT_FILE = join(dataset_path, f.readline()[:-1])
-        RIGHT_FILE = join(dataset_path, f.readline()[:-1])
-        DUPLICATE_TUPLES = join(dataset_path, f.readline()[:-1])
+        LEFT_FILE = join(dataset_path, f.readline().strip())
+        RIGHT_FILE = join(dataset_path, f.readline().strip())
+        DUPLICATE_TUPLES = join(dataset_path, f.readline().strip())
         f.close()
         if run_trans==True and LR_dup_free==False:
             ltable_df, rtable_df, duplicates_df, candset_df,candset_df_l,candset_df_r = load_data(LEFT_FILE, RIGHT_FILE, DUPLICATE_TUPLES,
@@ -51,7 +51,8 @@ if __name__ == '__main__':
             ltable_df, rtable_df, duplicates_df, candset_df = load_data(LEFT_FILE, RIGHT_FILE, DUPLICATE_TUPLES,
                                                                                               blocking_func,
                                                                                               include_self_join=False)
-
+        if duplicates_df is None:
+            duplicates_df = pd.DataFrame(columns=["ltable_id", "rtable_id"])
         candset_features_df = gather_features_and_labels(ltable_df, rtable_df, duplicates_df, candset_df)
         candset_features_df.to_csv(join(dataset_path,"candset_features_df.csv"))
         id_df = candset_df[["ltable_id", "rtable_id"]]
@@ -94,6 +95,8 @@ if __name__ == '__main__':
             id_dfs = (id_df, id_df_l, id_df_r)
 
     true_labels = candset_features_df.gold.values
+    if np.sum(true_labels)==0:
+        true_labels = None
     y_pred = run_zeroer(similarity_features_df, similarity_features_lr,id_dfs,
                         true_labels ,LR_dup_free,run_trans)
     pred_df = candset_features_df[["ltable_id","rtable_id"]]

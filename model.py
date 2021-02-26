@@ -448,8 +448,7 @@ class ZeroerModel:
                             f1, p, r))
                     pbar.set_description_str(result_str)
 
-                model.y_step = y_pred
-        return model, y_pred
+        return model, model.P_M
 
 
 if __name__ == '__main__':

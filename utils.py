@@ -1,4 +1,4 @@
-import csv
+import numpy as np
 from sklearn.metrics import precision_score, recall_score, f1_score
 
 from model import get_y_init_given_threshold,ZeroerModel
@@ -28,7 +28,8 @@ def run_zeroer(similarity_features_df, similarity_features_lr,id_dfs,true_labels
     c_bay = 0.1
     model, y_pred = ZeroerModel.run_em(similarity_matrixs, feature_names, y_inits,id_dfs,LR_dup_free,run_trans, y_true=true_labels,
                                        hard=False, c_bay=c_bay)
-    p, r, f1 = get_results(true_labels, y_pred)
-    print("Results after EM:")
-    print("F1: {:0.2f}, Precision: {:0.2f}, Recall: {:0.2f}".format(f1, p, r))
+    if true_labels is not None:
+        p, r, f1 = get_results(true_labels, np.round(np.clip(y_pred + DEL, 0., 1.)).astype(int))
+        print("Results after EM:")
+        print("F1: {:0.2f}, Precision: {:0.2f}, Recall: {:0.2f}".format(f1, p, r))
     return y_pred
