@@ -8,15 +8,20 @@ parser = argparse.ArgumentParser()
 parser.add_argument("dataset",type=str)
 parser.add_argument("--run_transitivity",type=bool,default=False,nargs="?",const=True, help="whether to enforce transitivity constraint")
 parser.add_argument("--LR_dup_free",type=bool,default=False,nargs="?",const=True, help="are the left table and right table duplicate-free?")
-parser.add_argument("--LR_identical",type=bool,default=False,nargs="?",const=True, help="are the left table and right table identical?")
+parser.add_argument("--run_transitivity_single_table",type=bool,default=False,nargs="?",const=True, help="whether to enforce transitivity constraint? Use this only for single table deduplication.")
 
 data_path = "datasets"
 
 if __name__ == '__main__':
     args = parser.parse_args()
     LR_dup_free = args.LR_dup_free
-    run_trans = args.run_transitivity
-    LR_identical = args.LR_identical
+    run_transitivity_single_table = args.run_transitivity_single_table
+    if run_transitivity_single_table:
+        run_trans = True
+        LR_identical = True
+    else:
+        run_trans = args.run_transitivity
+        LR_identical = args.LR_identical
     dataset_name = args.dataset
     dataset_path = join(data_path,dataset_name)
     blocking_func = blocking_functions_mapping[dataset_name]
@@ -43,7 +48,10 @@ if __name__ == '__main__':
 
         f = open(join(dataset_path, 'metadata.txt'), "r")
         LEFT_FILE = join(dataset_path, f.readline().strip())
-        RIGHT_FILE = join(dataset_path, f.readline().strip())
+        if LR_identical:
+            RIGHT_FILE = LEFT_FILE
+        else:
+            RIGHT_FILE = join(dataset_path, f.readline().strip())
         DUPLICATE_TUPLES = join(dataset_path, f.readline().strip())
         f.close()
         if run_trans==True and LR_dup_free==False and LR_identical==False:
