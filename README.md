@@ -36,4 +36,16 @@ For single table deduplication, you can refer to `datasets/fodors_zagats_single/
     
    `python zeroer.py fodors_zagats_single --LR_identical --run_transitivity`
 
-5. Final result for matches and unmatches is the file `pred.csv` that is saved to your dataset folder.
+4. Final result for matches and unmatches is the file `pred.csv` that is saved to your dataset folder.
+
+## Citation
+If you use our work or found it useful, please cite our paper:
+```
+@inproceedings{wu2020zeroer,
+  author    = {Renzhi Wu and Sanya Chaba and Saurabh Sawlani and Xu Chu and Saravanan Thirumuruganathan},
+  title     = {ZeroER: Entity Resolution using Zero Labeled Examples},
+  booktitle = {Proceedings of the 2020 ACM SIGMOD International Conference on Management of Data},
+  pages     = {1149–1164},
+  year      = {2020}
+}
+```
