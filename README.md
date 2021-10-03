@@ -12,11 +12,11 @@ For single table deduplication, you can refer to `datasets/fodors_zagats_single/
    You can have a look at the blocking functions we wrote in that file to get some ideas of how to write your own blocking function.
    We use Magellan to do blocking so you can also refer to its [documentations](https://sites.google.com/site/anhaidgroup/projects/magellan/py_entitymatching).
 
-3. To run the code, for example you are using the fodors_zagats dataset:
+3. **Two table record linkage**. <br />
+    To run the code, for example you are using the fodors_zagats dataset:
 
     `python zeroer.py fodors_zagats`
 
-    **Two table record linkage**. <br />
     If you want to incorporate the transitivity constraint, use arg `--run_transitivity`: 
 
     `python zeroer.py fodors_zagats --run_transitivity`
@@ -28,8 +28,12 @@ For single table deduplication, you can refer to `datasets/fodors_zagats_single/
     `python zeroer.py fodors_zagats --run_transitivity --LR_dup_free`
    
    **Single table deduplication**. <br />
-  If you want to incorporate the transitivity constraint, use arg `--run_transitivity_single_table`:
+  You must explictly tell the system that you are doing single table deduplication by arg `--LR_identical`:
+
+   `python zeroer.py fodors_zagats_single --LR_identical`
+
+   If you want to incorporate the transitivity constraint, add arg `--run_transitivity`:
     
-   `python zeroer.py fodors_zagats_single --run_transitivity_single_table`
+   `python zeroer.py fodors_zagats_single --LR_identical --run_transitivity`
 
 5. Final result for matches and unmatches is the file `pred.csv` that is saved to your dataset folder.
