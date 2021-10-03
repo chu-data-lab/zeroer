@@ -43,10 +43,10 @@ def blocking_for_citeseer_dblp(A,B):
     #verify_blocking_ground_truth(A, B, C1, matches_df_head)
 
 #fodors.csv and zagats.csv
-def block_fodors_zagats(A, B,increase_o=0):
+def block_fodors_zagats(A, B):
     ob = em.OverlapBlocker()
     C = ob.block_tables(A, B, 'name', 'name', l_output_attrs=['name', 'addr', 'city', 'phone'],  r_output_attrs=['name', 'addr', 'city', 'phone'],
-        overlap_size=1+increase_o, show_progress=False)
+        overlap_size=1, show_progress=False)
     return C
 
 
@@ -91,23 +91,23 @@ def block_restaurants(A, B):
 
 
 #dblp.csv and ACM.csv
-def block_dblp_acm(A, B,increase_o=0):
+def block_dblp_acm(A, B):
     ab = em.AttrEquivalenceBlocker()
     C = ab.block_tables(A, B, l_block_attr='year', r_block_attr='year', l_output_attrs=["title","authors","venue","year"],
         r_output_attrs=["title","authors","venue","year"], allow_missing=False)
     ob = em.OverlapBlocker()
     #=================>results in a candidate set of size 46K with 5 missing duplicates out of 2224
-    C2 = ob.block_candset(C, 'title', 'title', word_level=True, overlap_size=2+increase_o, show_progress=True)
+    C2 = ob.block_candset(C, 'title', 'title', word_level=True, overlap_size=2, show_progress=True)
     return C2
 
 
 #dblp.csv and google_scholar.csv
-def block_dblp_scholar(A, B,increase_o=0):
+def block_dblp_scholar(A, B):
     ob = em.OverlapBlocker()
     attributes = ["id","title","authors","venue","year"]
     #C1 = ob.block_tables(A, B, 'title', 'title', word_level=True, overlap_size=3, show_progress=True, l_output_attrs=attributes, r_output_attrs=attributes)
     #=================>results in a candidate set of size 1.2M with 178 missing duplicates out of 5347
-    C2 = ob.block_tables(A, B, 'title', 'title', word_level=True, overlap_size=4+increase_o, show_progress=True, l_output_attrs=attributes, r_output_attrs=attributes)
+    C2 = ob.block_tables(A, B, 'title', 'title', word_level=True, overlap_size=4, show_progress=True, l_output_attrs=attributes, r_output_attrs=attributes)
     #=================>results in a candidate set of size 135K with 467 missing duplicates out of 5347
     return C2
 
@@ -124,14 +124,14 @@ def block_rotten_imdb(A, B):
 
 
 #abt.csv and buy.csv
-def block_abt_buy(A, B,increase_o=0):
+def block_abt_buy(A, B):
     try:
         B["description"] = B["description"] + " " + B["manufacturer"]
     except:
         print()
     ob = em.OverlapBlocker()
     #=================>results in a candidate set of size 164K with 6 missing duplicates out of 1097
-    C = ob.block_tables(A, B, "name", "name", word_level=True, overlap_size=1+increase_o,
+    C = ob.block_tables(A, B, "name", "name", word_level=True, overlap_size=1,
     l_output_attrs=["name","description","price"], r_output_attrs=["name","description","price"], show_progress=True, allow_missing=False)
     return C
 
@@ -176,15 +176,36 @@ def block_walmart_amazon(A, B):
     C2 = ob.block_tables(A, B, 'title', 'title', word_level=True, overlap_size=2, l_output_attrs=l_attributes, r_output_attrs=r_attributes, show_progress=True, allow_missing=True)
     #=================>results in a candidate set of size 278K with 84 missing duplicates out of 1154
     #blocking_utils.verify_blocking_ground_truth(dataset_name, C2)
-
     return C2
 
+def block_wa(A, B):
+    #assumes some preprocessing is done:
+    #Specifically in amazon.csv : a.    pcategory2  => groupname , b.    { proddescrshort,proddescrlong } => shortdescr,longdescr
+
+    ob = em.OverlapBlocker()
+
+    #C1 = ob.block_tables(ltable, rtable, 'title', 'title', word_level=True, overlap_size=2)
+    #=================>results in a candidate set of size 1.1M with 20 missing duplicates out of 1154
+    #blocking_utils.verify_blocking_ground_truth(dataset_name, C1)
+
+    r_attributes = ["title","category","brand","modelno","price"]
+    l_attributes = ["title","category","brand","modelno","price"]
+
+    if not set(r_attributes).issubset(B.columns): # fix in case A B are the same dataset
+        r_attributes = l_attributes
+    if not set(l_attributes).issubset(A.columns):
+        l_attributes = r_attributes
+    #attributes = ['brand', 'groupname', 'title', 'price', 'shortdescr', 'longdescr', 'imageurl', 'modelno', 'shipweight', 'dimensions']
+    C2 = ob.block_tables(A, B, 'title', 'title', word_level=True, overlap_size=2, l_output_attrs=l_attributes, r_output_attrs=r_attributes, show_progress=True, allow_missing=True)
+    #=================>results in a candidate set of size 278K with 84 missing duplicates out of 1154
+    #blocking_utils.verify_blocking_ground_truth(dataset_name, C2)
+    return C2
 
 #amazon.csv and GoogleProducts.csv
-def block_amazon_googleproducts(A, B,increase_o=0):
+def block_amazon_googleproducts(A, B):
     ob = em.OverlapBlocker()
     #=================>results in a candidate set of size 400K with 6 missing duplicates out of 1300
-    C = ob.block_tables(A, B, "title", "title", word_level=True, overlap_size=1+increase_o, l_output_attrs=["title","description","manufacturer","price"], r_output_attrs=["title","description","manufacturer","price"], show_progress=True, allow_missing=False)
+    C = ob.block_tables(A, B, "title", "title", word_level=True, overlap_size=1, l_output_attrs=["title","description","manufacturer","price"], r_output_attrs=["title","description","manufacturer","price"], show_progress=True, allow_missing=False)
     return C
 
 def block_songs(A, B):
@@ -228,3 +249,4 @@ blocking_functions_mapping["synthetic"] = generic_blocking_func
 blocking_functions_mapping["books"] = block_books
 blocking_functions_mapping["baby_products"] = block_baby_products
 blocking_functions_mapping["restaurants"] = block_restaurants
+blocking_functions_mapping['wa'] = block_wa
