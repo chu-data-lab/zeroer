@@ -1,3 +1,2 @@
 fz.csv
-fz_copy.csv
 matches_fodors_zagats.csv
