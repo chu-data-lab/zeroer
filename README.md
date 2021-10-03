@@ -12,7 +12,7 @@ For single table deduplication, you can refer to `datasets/fodors_zagats_single/
    You can have a look at the blocking functions we wrote in that file to get some ideas of how to write your own blocking function.
    We use Magellan to do blocking so you can also refer to its [documentations](https://sites.google.com/site/anhaidgroup/projects/magellan/py_entitymatching).
 
-3. **Two table record linkage**. <br />
+3. **Two-table record linkage**. <br />
     To run the code, for example you are using the fodors_zagats dataset:
 
     `python zeroer.py fodors_zagats`
@@ -27,7 +27,7 @@ For single table deduplication, you can refer to `datasets/fodors_zagats_single/
 
     `python zeroer.py fodors_zagats --run_transitivity --LR_dup_free`
    
-   **Single table deduplication**. <br />
+   **Single-table deduplication**. <br />
   You must explictly tell the system that you are doing single table deduplication by arg `--LR_identical`:
 
    `python zeroer.py fodors_zagats_single --LR_identical`
