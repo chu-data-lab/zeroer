@@ -13,7 +13,7 @@ def get_results(true_labels, predicted_labels):
     return p, r, f1
 
 
-def run_zeroer(similarity_features_df, similarity_features_lr,id_dfs,true_labels,LR_dup_free,run_trans):
+def run_zeroer(similarity_features_df, similarity_features_lr,id_dfs,true_labels,LR_dup_free,LR_identical,run_trans):
     similarity_matrix = similarity_features_df.values
     y_init = get_y_init_given_threshold(similarity_features_df)
     similarity_matrixs = [similarity_matrix,None,None]
@@ -26,7 +26,7 @@ def run_zeroer(similarity_features_df, similarity_features_lr,id_dfs,true_labels
     feature_names = similarity_features_df.columns
 
     c_bay = 0.1
-    model, y_pred = ZeroerModel.run_em(similarity_matrixs, feature_names, y_inits,id_dfs,LR_dup_free,run_trans, y_true=true_labels,
+    model, y_pred = ZeroerModel.run_em(similarity_matrixs, feature_names, y_inits,id_dfs,LR_dup_free,LR_identical, run_trans, y_true=true_labels,
                                        hard=False, c_bay=c_bay)
     if true_labels is not None:
         p, r, f1 = get_results(true_labels, np.round(np.clip(y_pred + DEL, 0., 1.)).astype(int))

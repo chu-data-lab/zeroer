@@ -232,6 +232,7 @@ def generic_blocking_func(A, B):
 
 blocking_functions_mapping = defaultdict(str)
 blocking_functions_mapping["fodors_zagats"] = block_fodors_zagats
+blocking_functions_mapping["fodors_zagats_single"] = block_fodors_zagats
 blocking_functions_mapping["abt_buy"] = block_abt_buy
 blocking_functions_mapping["dblp_acm"] = block_dblp_acm
 blocking_functions_mapping["dblp_scholar"] = block_dblp_scholar

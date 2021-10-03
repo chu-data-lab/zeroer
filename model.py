@@ -225,7 +225,7 @@ class ZeroerModel:
         P_M_test = np.round(np.clip(P_M_test, 0., 1.))
         return P_M_test
 
-    def enforce_transitivity(self, P_M, ids, id_tuple_to_index, model_l, model_r,LR_dup_free=False):
+    def enforce_transitivity(self, P_M, ids, id_tuple_to_index, model_l, model_r,LR_dup_free=False,LR_identical=False):
         model_l_P_M=None
         model_r_P_M=None
         if model_l is not None:
@@ -252,6 +252,13 @@ class ZeroerModel:
                     if LR_dup_free:
                         p_r = 0
                         idr = -1
+                    elif LR_identical:
+                        if (pred_tuples[i][1], pred_tuples[j][1]) not in id_tuple_to_index:
+                            p_r = 0
+                            idr = -1
+                        else:
+                            p_r = P_M[id_tuple_to_index[(pred_tuples[i][1],pred_tuples[j][1])]]
+                            idr = id_tuple_to_index[(pred_tuples[i][1],pred_tuples[j][1])]
                     elif model_r_P_M is not None:
                             if (pred_tuples[i][1], pred_tuples[j][1]) not in id_tuple_to_index_r:
                                 p_r = 0
@@ -263,7 +270,10 @@ class ZeroerModel:
                     if p1*p2 > p_r:
                         delta_ls = [self.delta_L(p_r/p2,id1),self.delta_L(p_r/p1,id2)]
                         if idr != -1:
-                            delta_ls.append(model_r.delta_L(p1 * p2, idr))
+                            if LR_identical:
+                                delta_ls.append(self.delta_L(p1 * p2, idr))
+                            else:
+                                delta_ls.append(model_r.delta_L(p1 * p2, idr))
                         i_max = np.argmax(delta_ls)
                         if delta_ls[i_max]>-1e100:
                             if i_max == 0:
@@ -271,7 +281,10 @@ class ZeroerModel:
                             elif i_max == 1:
                                 P_M[id2] = p_r / p1
                             elif i_max == 2:
-                                model_r_P_M[idr] = p1*p2
+                                if LR_identical:
+                                    P_M[idr] = p1 * p2
+                                else:
+                                    model_r_P_M[idr] = p1*p2
                 else:
                     break
 
@@ -287,6 +300,13 @@ class ZeroerModel:
                     if LR_dup_free:
                         p_l = 0
                         idl = -1
+                    elif LR_identical:
+                        if (pred_tuples[i][0], pred_tuples[j][0]) not in id_tuple_to_index:
+                            p_l = 0
+                            idl = -1
+                        else:
+                            p_l = P_M[id_tuple_to_index[(pred_tuples[i][0],pred_tuples[j][0])]]
+                            idl = id_tuple_to_index[(pred_tuples[i][0],pred_tuples[j][0])]
                     elif model_l_P_M is not None:
                             if (pred_tuples[i][0], pred_tuples[j][0]) not in id_tuple_to_index_l:
                                 p_l = 0
@@ -299,7 +319,10 @@ class ZeroerModel:
                     if p1*p2 > p_l:
                         delta_ls = [self.delta_L(p_l / p2, id1), self.delta_L(p_l / p1, id2)]
                         if idl != -1:
-                            delta_ls.append(model_l.delta_L(p1 * p2, idl))
+                            if LR_identical:
+                                delta_ls.append(self.delta_L(p1 * p2, idl))
+                            else:
+                                delta_ls.append(model_l.delta_L(p1 * p2, idl))
                         i_max = np.argmax(delta_ls)
                         if delta_ls[i_max]>-1e100:
                             if i_max == 0:
@@ -307,7 +330,10 @@ class ZeroerModel:
                             elif i_max == 1:
                                 P_M[id2] = p_l / p1
                             elif i_max == 2:
-                                model_l_P_M[idl] = p1 * p2
+                                if LR_identical:
+                                    P_M[idl] = p1*p2
+                                else:
+                                    model_l_P_M[idl] = p1 * p2
                 else:
                     break
         if model_r_P_M is not None:
@@ -397,7 +423,7 @@ class ZeroerModel:
         return pickle.load(open(filepath, 'rb'))
 
     @classmethod
-    def run_em(cls, similarity_matrixs, feature_names, y_inits,id_dfs,LR_dup_free,run_trans,
+    def run_em(cls, similarity_matrixs, feature_names, y_inits,id_dfs,LR_dup_free,LR_identical,run_trans,
                c_bay=0.015,
                y_true=None,
                pi_M=None,
@@ -407,7 +433,7 @@ class ZeroerModel:
         y_init,y_init_l,y_init_r = y_inits
         id_df, id_df_l, id_df_r = id_dfs
         model = cls(sims, feature_names,y_init,id_df,pi_M=pi_M, hard=hard,c_bay=c_bay)
-        if run_trans and LR_dup_free==False:
+        if run_trans and LR_dup_free==False and LR_identical==False:
             model_l = cls(sims_l, feature_names,y_init_l,id_df_l,c_bay=c_bay)
             model_r = cls(sims_r, feature_names,y_init_r,id_df_r,c_bay=c_bay)
 
@@ -417,18 +443,18 @@ class ZeroerModel:
             for i in pbar:
                 model.e_step()
                 if run_trans:
-                    if LR_dup_free==False:
+                    if LR_dup_free==False and LR_identical==False:
                         model_r.e_step()
                         model_l.e_step()
                     for i in range(4):
-                        if LR_dup_free == False:
+                        if LR_dup_free == False and LR_identical==False:
                             model_l.P_M = model_l.enforce_transitivity(model_l.P_M, model_l.ids, model_l.id_tuple_to_index, model_l, model_l)
                             model_r.P_M = model_r.enforce_transitivity(model_r.P_M, model_r.ids, model_r.id_tuple_to_index, model_r, model_r)
                             model.P_M = model.enforce_transitivity(model.P_M, model.ids, model.id_tuple_to_index, model_l, model_r)
                         else:
-                            model.P_M = model.enforce_transitivity(model.P_M, model.ids, model.id_tuple_to_index, None, None,True)
+                            model.P_M = model.enforce_transitivity(model.P_M, model.ids, model.id_tuple_to_index, None, None,LR_dup_free,LR_identical)
                 model.m_step()
-                if run_trans and LR_dup_free == False:
+                if run_trans and LR_dup_free == False and LR_identical==False:
                     model_r.m_step()
                     model_l.m_step()
 
