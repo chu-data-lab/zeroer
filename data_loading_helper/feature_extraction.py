@@ -101,23 +101,23 @@ def extract_features(ltable_df, rtable_df, candset_df):
             else:
                 right_attr_types[c[1]] = left_attr_types[c[0]]
 
-    feature_list = get_features(ltable_df,rtable_df,left_attr_types, right_attr_types, correspondences, tokenizers, sim_functions)
+    feature_records = get_features(ltable_df,rtable_df,left_attr_types, right_attr_types, correspondences, tokenizers, sim_functions)
     #Remove all features based on id - they are often useless
-    feature_list = feature_list[feature_list.left_attribute !='id']
-    feature_list.reset_index(inplace=True,drop=True)
+    feature_records = feature_records[feature_records.left_attribute !='id']
+    feature_records.reset_index(inplace=True,drop=True)
 
     distance_functions = ["lev_dist", "rdf"]
     non_normalized_functions = ["aff", "sw", "swn", "nmw"]
-    keep_features = [True]*feature_list.shape[0]
-    for i in range(feature_list.shape[0]):
-        feature = feature_list.loc[i,"feature_name"]
+    keep_features = [True]*feature_records.shape[0]
+    for i in range(feature_records.shape[0]):
+        feature = feature_records.loc[i,"feature_name"]
         for func in distance_functions + non_normalized_functions:
             if func in feature:
                 keep_features[i] = False
-    feature_list = feature_list.loc[keep_features,:]
+    feature_records = feature_records.loc[keep_features,:]
 
     print("\n\nExtracting the full set of features:")
-    candset_features_df = em.extract_feature_vecs(candset_df,feature_table=feature_list,attrs_after='gold',show_progress=True,n_jobs=-1)
+    candset_features_df = em.extract_feature_vecs(candset_df,feature_table=feature_records,attrs_after='gold',show_progress=True,n_jobs=-1)
     candset_features_df.fillna(value=0, inplace=True)
 
     return candset_features_df
